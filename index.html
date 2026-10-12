@@ -1,0 +1,369 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Anatomy of Heat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Special+Elite&display=swap">
+<style>
+/* Layout concept: the essay set as a magazine feature, one spread at a time. Every word of the copy appears once, in reading order. Ground alternates paper, ink and red; treatment alternates type, voices and drawn scenes. Sources sit in a closed drawer. */
+:root{
+  --bg:#F6F8F8; --ink:#242829; --mute:#545B5F; --rule:#D3D9DB; --red:#B3302A; --tint:#E7EDED;
+  --inv-bg:#242829; --inv-fg:#F6F8F8; --inv-mute:#A9B3B6; --inv-red:#FF7266; --inv-rule:#444C4F;
+  --hot-bg:#B3302A; --hot-fg:#F6F8F8;
+  --sans:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono','Courier New',monospace;
+  --type:'Special Elite','Courier New',monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131617; --ink:#EEF2F2; --mute:#9AA4A8; --rule:#323A3D; --red:#E8685F; --tint:#1C2123;
+  --inv-bg:#EEF2F2; --inv-fg:#131617; --inv-mute:#545B5F; --inv-red:#B3302A; --inv-rule:#C4CCCE;
+  --hot-bg:#E8685F; --hot-fg:#131617; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131617; --ink:#EEF2F2; --mute:#9AA4A8; --rule:#323A3D; --red:#E8685F; --tint:#1C2123;
+  --inv-bg:#EEF2F2; --inv-fg:#131617; --inv-mute:#545B5F; --inv-red:#B3302A; --inv-rule:#C4CCCE;
+  --hot-bg:#E8685F; --hot-fg:#131617; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.deck{height:100%;display:grid;grid-template-rows:auto 1fr auto;background:var(--bg)}
+.top,.bar{display:flex;align-items:center;gap:16px;padding:10px clamp(16px,3vw,40px);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);background:var(--bg);position:relative;z-index:30}
+.top{border-bottom:1px solid var(--rule)}
+.bar{border-top:1px solid var(--rule);padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.brand{color:var(--ink);font-weight:500;white-space:nowrap}
+.mv{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.count{white-space:nowrap;font-variant-numeric:tabular-nums}
+.stage{position:relative;min-height:0;overflow:hidden}
+.card{position:absolute;inset:0;display:none;overflow-y:auto;overflow-x:hidden;background:var(--bg);color:var(--ink);padding:clamp(20px,4vw,56px) clamp(16px,5vw,80px) 88px}
+.card.on{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-rows:minmax(max-content,1fr);animation:in .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card.inv{--bg:var(--inv-bg);--ink:var(--inv-fg);--mute:var(--inv-mute);--red:var(--inv-red);--rule:var(--inv-rule);--tint:color-mix(in srgb,var(--inv-fg) 9%,var(--inv-bg))}
+.card.hot{--bg:var(--hot-bg);--ink:var(--hot-fg);--mute:color-mix(in srgb,var(--hot-fg) 78%,var(--hot-bg));--red:var(--hot-fg);--rule:color-mix(in srgb,var(--hot-fg) 40%,var(--hot-bg));--tint:color-mix(in srgb,var(--hot-fg) 12%,var(--hot-bg))}
+.kick{font-family:var(--mono);font-size:clamp(10px,1vw,12px);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);display:flex;gap:12px;flex-wrap:wrap;align-items:baseline}
+.kick b{color:var(--red);font-weight:500}
+.sh{font-weight:700;letter-spacing:-.03em;line-height:1;font-size:clamp(30px,5vw,80px);text-wrap:balance;margin:0}
+.sh .rn{color:var(--red);margin-right:.25em}
+.subh{font-weight:500;letter-spacing:-.015em;line-height:1.15;font-size:clamp(20px,2.4vw,36px);text-wrap:balance;margin:0;color:var(--ink)}
+.tx{display:flex;flex-direction:column;gap:clamp(14px,1.8vw,24px);min-width:0}
+.tx p{margin:0;font-size:clamp(16px,1.5vw,22px);line-height:1.55;max-width:62ch;text-wrap:pretty}
+.tx p.lead{font-size:clamp(19px,2vw,30px);line-height:1.4;font-weight:500;letter-spacing:-.01em}
+.tx p.d{font-weight:600;font-size:clamp(26px,3.4vw,54px);line-height:1.05;letter-spacing:-.025em;max-width:22ch;text-wrap:balance}
+.tx p.dx{font-weight:700;font-size:clamp(40px,8vw,140px);line-height:.95;letter-spacing:-.05em;color:var(--red)}
+.tx p.stack{font-weight:600;font-size:clamp(26px,4vw,64px);line-height:1.04;letter-spacing:-.03em;display:flex;flex-direction:column}
+.tx p.stack span:nth-child(2){padding-left:.6em}
+.tx p.stack span:nth-child(3){padding-left:1.2em;color:var(--red)}
+.tx p.k{font-family:var(--type);font-size:clamp(14px,1.2vw,18px);color:var(--mute)}
+.tx strong{font-weight:600}
+.qf{margin:0;display:flex;flex-direction:column;gap:10px}
+.qf blockquote{margin:0;border-top:3px solid var(--ink);padding-top:14px;font-weight:500;font-size:clamp(22px,2.7vw,42px);line-height:1.15;letter-spacing:-.015em;text-wrap:pretty;max-width:30ch}
+.qf.sm blockquote{font-size:clamp(18px,1.9vw,28px);max-width:34ch}
+.qf figcaption{font-family:var(--type);font-size:clamp(12px,1.05vw,15px);color:var(--mute)}
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,4vw,72px);align-items:center}
+.split>*{min-width:0}
+.split.rev>.vs{order:-1}
+.solo{display:flex;flex-direction:column;gap:clamp(16px,2vw,28px);justify-content:center;max-width:1100px}
+.vs{display:flex;flex-direction:column;gap:10px}
+.illus{font-family:var(--type);font-size:12px;color:var(--mute)}
+svg{display:block;max-width:100%;height:auto}
+svg text{font-family:var(--mono);fill:var(--ink)}
+.pr{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.pr>div{padding:clamp(16px,2.4vw,36px);display:flex;flex-direction:column;gap:14px;min-width:0}
+.pr .a{background:var(--tint)}
+.pr .b{background:var(--inv-bg);--ink:var(--inv-fg);--mute:var(--inv-mute);--red:var(--inv-red);color:var(--inv-fg)}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:2px solid var(--ink)}
+.tri>div{padding:clamp(14px,2vw,28px);display:flex;flex-direction:column;gap:12px;min-width:0}
+.tri>div+div{border-left:2px solid var(--ink)}
+@media (max-width:900px){.split{grid-template-columns:minmax(0,1fr);align-content:start}.split.rev>.vs{order:0}.pr,.tri{grid-template-columns:1fr}.tri>div+div{border-left:0;border-top:2px solid var(--ink)}.mv{display:none}.lbl{display:none}}
+/* chrome */
+.ctrl{display:flex;gap:8px;align-items:center}
+.btn{background:transparent;border:1px solid var(--rule);padding:8px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);line-height:1}
+.btn:hover,.btn[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.nav{padding:8px 14px;font-size:14px}
+.btn:disabled{opacity:.35;cursor:default}
+.trackw{flex:1;min-width:0;height:22px;position:relative;cursor:pointer;display:block;border:0;background:transparent;padding:0}
+.trackw .tk{position:absolute;left:0;right:0;top:9px;height:4px;background:var(--rule)}
+.trackw .fl{position:absolute;left:0;top:9px;height:4px;background:var(--red);width:0;transition:width .3s}
+.trackw .tick{position:absolute;top:4px;width:2px;height:14px;background:var(--mute)}
+.ev-open{position:absolute;right:clamp(16px,3vw,40px);bottom:clamp(14px,2vw,26px);z-index:3}
+.drawer{position:absolute;top:0;bottom:0;width:min(560px,100%);background:var(--bg);color:var(--ink);z-index:20;transition:transform .35s cubic-bezier(.2,.7,.2,1);overflow-y:auto;padding:24px clamp(16px,2.4vw,32px) 48px;visibility:hidden}
+.drawer.r{right:0;border-left:3px solid var(--ink);transform:translateX(102%)}
+.drawer.l{left:0;border-right:3px solid var(--ink);transform:translateX(-102%)}
+.drawer.open{transform:none;visibility:visible}
+.drawer h3{font-size:22px;letter-spacing:-.01em;margin:6px 0 4px;font-weight:600}
+.drawer h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin:24px 0 8px;font-weight:500}
+.drawer p,.drawer li{font-size:15px;line-height:1.5}
+.drawer ul{padding-left:18px;margin:6px 0}
+.drawer blockquote{margin:10px 0;padding:2px 0 2px 14px;border-left:3px solid var(--ink);font-size:16px;line-height:1.4;font-weight:500}
+.drawer blockquote small{display:block;font-family:var(--type);font-weight:400;font-size:12px;color:var(--mute);margin-top:4px}
+.drawer .x{float:right}
+.toc{display:grid;gap:0;margin:14px 0 0;padding:0;list-style:none}
+.toc button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px 1fr auto;gap:10px;padding:12px 0;border-top:1px solid var(--rule);width:100%;box-sizing:border-box;font-size:15px;line-height:1.3}
+.toc button:hover{color:var(--red)}
+.toc button:focus-visible{outline:2px solid var(--red)}
+.toc .n{font-family:var(--mono);font-size:12px;color:var(--red)}
+.toc .c{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.toc .cur{font-weight:600}
+.scrim{position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 35%,transparent);z-index:18;display:none}
+.scrim.on{display:block}
+/* page furniture */
+.cover{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(16px,3vw,48px);align-items:center}
+.cover h1{margin:0;font-weight:700;letter-spacing:-.05em;line-height:.9;font-size:clamp(44px,9.5vw,170px);text-wrap:balance}
+.cover h1 em{font-style:normal;color:var(--red)}
+.cover .sub2{font-weight:500;font-size:clamp(20px,2.6vw,42px);letter-spacing:-.02em;margin:clamp(14px,2vw,28px) 0 0}
+@media (max-width:900px){.cover{grid-template-columns:1fr}}
+.draw{stroke-dasharray:1200;stroke-dashoffset:1200;animation:dash 2.4s .4s ease-out forwards}
+@keyframes dash{to{stroke-dashoffset:0}}
+.ann{opacity:0;animation:fadeslow .5s both}
+@keyframes fadeslow{from{opacity:0}to{opacity:1}}
+.legend{display:grid;gap:8px;margin:10px 0 0;padding:0;list-style:none}
+.legend li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;font-size:clamp(14px,1.2vw,17px)}
+.legend b{font-family:var(--mono);font-weight:500;width:24px;height:24px;border-radius:50%;background:var(--red);color:var(--bg);display:grid;place-items:center;font-size:12px}
+.sc{position:relative;border:2px solid var(--ink);padding:clamp(18px,3vw,44px);display:flex;flex-direction:column;gap:clamp(12px,1.6vw,20px)}
+.sc .num{font-weight:700;font-size:clamp(60px,10vw,160px);line-height:.8;letter-spacing:-.06em;color:var(--red)}
+.sc h2{margin:0;font-weight:700;font-size:clamp(28px,4vw,64px);letter-spacing:-.03em;line-height:1}
+.sc.k1{background:var(--tint)}
+.sc.k2{background:var(--inv-bg);color:var(--inv-fg);--ink:var(--inv-fg);--mute:var(--inv-mute);--red:var(--inv-red);border-color:var(--ink)}
+.sc.k3{border-style:dashed}
+.sc.k4{background:var(--hot-bg);border-color:var(--hot-bg);color:var(--hot-fg);--ink:var(--hot-fg);--red:var(--hot-fg);--mute:var(--hot-fg)}
+.sc.k5{box-shadow:10px 10px 0 var(--ink)}
+.cw{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(16px,3vw,48px);align-items:center}
+@media (max-width:900px){.cw{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){.card.on,.ann{animation:none;opacity:1}.draw{animation:none;stroke-dashoffset:0}.drawer,.trackw .fl{transition:none}}
+
+/* Editorial photography edition */
+.photo-bleed{position:relative;min-height:min(70vh,720px);width:100%;overflow:hidden;background:#28221f;isolation:isolate}
+.photo-bleed img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.94) contrast(1.07)}
+.photo-bleed:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,12,11,.81),rgba(16,12,11,.34) 64%,rgba(16,12,11,.12));z-index:1}
+.photo-bleed .photo-copy{position:relative;z-index:2;color:#fff;padding:clamp(34px,6vw,90px);min-height:min(70vh,720px);display:flex;flex-direction:column;justify-content:center;max-width:920px}
+.photo-bleed .photo-copy p{font-size:clamp(19px,2vw,30px);line-height:1.42;max-width:52ch}
+.photo-bleed .photo-copy .d{font-size:clamp(32px,4.8vw,76px);line-height:1.08;max-width:19ch}
+.photo-credit{position:absolute;z-index:3;right:12px;bottom:9px;color:#fff;font-size:10px;font-family:var(--mono);text-align:right;background:rgba(0,0,0,.4);padding:5px 7px}
+.card.photopage{padding:0 0 65px;display:block!important}
+.card.photopage:not(.on){display:none!important}
+.photo-bleed .photo-copy .subh{color:#fff}
+.photo-bleed .photo-copy .sh{color:#fff;font-size:clamp(28px,4vw,62px)}
+.photo-bleed .photo-copy .kick{color:#fff}
+.photo-bleed .photo-copy strong{color:#fff}
+@media(max-width:750px){.photo-bleed{min-height:72vh}.photo-bleed .photo-copy{min-height:72vh}.photo-bleed:after{background:linear-gradient(0deg,rgba(12,9,9,.9),rgba(12,9,9,.44) 85%)}}
+</style>
+<div class="deck" id="deck">
+  <header class="top"><span class="brand">The Anatomy of Heat</span><span class="mv" id="mv"></span><span class="count" id="count"></span></header>
+  <main class="stage" id="stage" aria-live="polite">
+    <div class="scrim" id="scrim"></div>
+    <aside class="drawer l" id="toc" aria-label="Contents" aria-hidden="true"></aside>
+    <aside class="drawer r" id="evid" aria-label="Explore the Evidence" aria-hidden="true"></aside>
+  </main>
+  <footer class="bar">
+    <div class="ctrl"><button class="btn nav" id="prev" aria-label="Previous page">&larr;</button><button class="btn nav" id="next" aria-label="Next page">&rarr;</button></div>
+    <button class="trackw" id="track" aria-label="Progress. Select a point to jump."><span class="tk"></span><span class="fl" id="fl"></span><span id="ticks"></span></button>
+    <div class="ctrl">
+      <button class="btn" id="bc" aria-expanded="false" title="Contents (C)">Contents</button>
+      <button class="btn" id="be" aria-expanded="false" title="Explore the Evidence (E)">Evidence</button>
+      <button class="btn" id="bt" title="Toggle light and dark" aria-label="Toggle light and dark">&#9680;</button>
+    </div>
+  </footer>
+</div>
+<script>
+const rnd=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function bits(n,seed,cx,cy,rx,ry,o={}){const red=o.red??.35,size=o.size??7,r=rnd(seed);let s='';for(let i=0;i<n;i++){const a=r()*6.283,d=Math.sqrt(r()),x=cx+Math.cos(a)*d*rx,y=cy+Math.sin(a)*d*ry,w=size*(.6+r()*.9),rot=Math.round(r()*180),R=r()<red;s+=`<rect x="${(x-w/2).toFixed(1)}" y="${(y-w/3).toFixed(1)}" width="${w.toFixed(1)}" height="${(w*.66).toFixed(1)}" rx="1" transform="rotate(${rot} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${R?'var(--red)':'var(--ink)'}" opacity="${R?.9:.82}"/>`}return s}
+function spoon(tx,ty,sc,rot,o={}){const oil=o.oil??.2,n=o.n??46,size=o.size??7;return `<g transform="translate(${tx} ${ty}) rotate(${rot}) scale(${sc})"><path d="M60 8 Q150 22 270 -36" stroke="var(--ink)" stroke-width="13" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="0" rx="72" ry="46" fill="var(--tint)" stroke="var(--ink)" stroke-width="4"/><ellipse cx="0" cy="6" rx="62" ry="36" fill="var(--red)" opacity="${oil}"/>${bits(n,o.seed??5,0,3,56,30,{size,red:o.red??.35})}</g>`}
+const IL=t=>`<div class="illus">${t}</div>`;
+const VS=(svg,cap)=>`<div class="vs">${svg}${cap?IL(cap):''}</div>`;
+const V={};
+V.cover=()=>VS(`<svg viewBox="0 0 800 380" role="img" aria-label="A spoonful of chili crisp">${spoon(300,200,2.05,0,{seed:21,n:90,size:10,oil:.22})}</svg>`,'Illustration of a spoonful.');
+V.five=()=>{const pts=[['A',300,168],['B',140,226],['C',560,92],['D',392,250],['E',300,236]],it=['intensity','development','duration','location','feeling'];
+return VS(`<svg viewBox="0 0 800 380" role="img" aria-label="One spoonful with five marked dimensions of heat">${spoon(300,200,2.05,0,{seed:21,n:90,size:10,oil:.22})}${pts.map((p,i)=>`<g class="ann" style="animation-delay:${.4+i*.6}s"><circle cx="${p[1]}" cy="${p[2]}" r="17" fill="var(--red)"/><text x="${p[1]}" y="${p[2]+5}" text-anchor="middle" font-size="16" font-weight="500" style="fill:var(--bg)">${p[0]}</text></g>`).join('')}</svg><ul class="legend">${it.map((t,i)=>`<li class="ann" style="animation-delay:${.4+i*.6}s"><b>${pts[i][0]}</b><span>${t}</span></li>`).join('')}</ul>`,'Illustration. The five dimensions are named by the researchers; the positions are drawn for effect.')};
+V.crescendo=()=>{let d='M20 150',x=20;for(let i=0;i<64;i++){x+=9;const a=2+i*.9;d+=` L${x} ${150+Math.sin(i*.95)*a}`}
+return VS(`<svg viewBox="0 0 620 300" role="img" aria-label="A wave that begins almost imperceptibly and swells"><line x1="20" y1="150" x2="600" y2="150" stroke="var(--rule)" stroke-width="2"/><path class="draw" d="${d}" fill="none" stroke="var(--red)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" pathLength="1200"/></svg>`,'Illustration of a crescendo. Not a measurement.')};
+V.music=()=>VS(`<svg viewBox="0 0 640 340" role="img" aria-label="A curve with an opening, a build, a climax and a finish"><line x1="30" y1="290" x2="620" y2="290" stroke="var(--ink)" stroke-width="3"/><path class="draw" d="M30 270 C110 266 150 230 220 170 C290 110 330 40 390 40 C450 40 470 190 520 240 C550 262 580 268 620 270" fill="none" stroke="var(--red)" stroke-width="7" stroke-linecap="round" pathLength="1200"/>${[['opening',70],['a build',210],['a climax',370],['a finish',540]].map(p=>`<text x="${p[1]}" y="322" font-size="15" text-anchor="middle" style="letter-spacing:.06em">${p[0]}</text>`).join('')}</svg>`,'Illustration. Not a measurement.');
+V.curves2=()=>`<svg viewBox="0 0 300 150" role="img" aria-label="Illustrative heat curves"></svg>`;
+const curveSvg=(d,lbl)=>`<svg viewBox="0 0 320 170" role="img" aria-label="${lbl}"><line x1="20" y1="140" x2="310" y2="140" stroke="var(--mute)" stroke-width="2"/><line x1="20" y1="10" x2="20" y2="140" stroke="var(--mute)" stroke-width="2"/><path class="draw" d="${d}" fill="none" stroke="var(--red)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1200"/></svg>`;
+const spike='M20 136 L120 128 L128 20 L150 18 C170 20 176 70 210 118 L310 130';
+const plateau='M20 136 C90 132 140 90 190 56 C230 32 260 30 310 30';
+V.bowl=()=>VS(`<svg viewBox="0 0 760 420" role="img" aria-label="A bowl of fragrant food with steam rising"><line x1="0" y1="360" x2="760" y2="360" stroke="var(--ink)" stroke-width="5"/><path d="M230 230 Q230 346 380 350 Q530 346 530 230Z" fill="var(--tint)" stroke="var(--ink)" stroke-width="6" stroke-linejoin="round"/><ellipse cx="380" cy="230" rx="150" ry="28" fill="var(--bg)" stroke="var(--ink)" stroke-width="6"/>${bits(26,9,380,230,110,16,{size:9,red:.3})}<g fill="none" stroke="var(--mute)" stroke-width="5" stroke-linecap="round"><path d="M330 186 q-14 -24 0 -46 q14 -22 0 -44"/><path d="M382 182 q-14 -24 0 -46 q14 -22 0 -44"/><path d="M434 186 q-14 -24 0 -46 q14 -22 0 -44"/></g></svg>`,'Illustration.');
+const plateG=(x,y,r,dab,seed)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="var(--bg)" stroke="var(--ink)" stroke-width="6"/><circle cx="${x}" cy="${y}" r="${r*.72}" fill="none" stroke="var(--rule)" stroke-width="3"/><ellipse cx="${x-6}" cy="${y-4}" rx="${r*.48}" ry="${r*.36}" fill="var(--tint)" stroke="var(--mute)" stroke-width="3"/>${dab?`<ellipse cx="${x+r*.26}" cy="${y+10}" rx="${dab}" ry="${dab*.7}" fill="var(--red)" opacity=".85"/>${bits(26,seed,x+r*.26,y+10,dab*.8,dab*.55,{size:9,red:.2})}`:''}`;
+V.table=(two=true)=>VS(`<svg viewBox="0 0 760 500" role="img" aria-label="Overhead view of a shared table with plates and a jar of chili crisp"><rect width="760" height="500" fill="var(--tint)"/><g stroke="var(--rule)" stroke-width="2">${[100,200,300,400].map(y=>`<line x1="0" y1="${y}" x2="760" y2="${y}"/>`).join('')}</g>${plateG(190,250,128,18,3)}${plateG(540,250,128,60,4)}<g transform="translate(365 150)"><rect width="30" height="130" rx="6" fill="var(--bg)" stroke="var(--ink)" stroke-width="5"/><rect y="40" width="30" height="50" fill="var(--ink)"/></g><g stroke="var(--ink)" stroke-width="6" stroke-linecap="round"><path d="M70 60 L70 180"/><path d="M690 60 L690 180"/></g></svg>`,'Illustration of the scene.');
+V.plate=()=>VS(`<svg viewBox="0 0 640 560" role="img" aria-label="Overhead view of a plate of noodles topped with chili crisp"><circle cx="320" cy="280" r="262" fill="var(--tint)" stroke="var(--ink)" stroke-width="6"/><circle cx="320" cy="280" r="206" fill="none" stroke="var(--rule)" stroke-width="3"/><g fill="none" stroke="var(--mute)" stroke-width="9" stroke-linecap="round">${Array.from({length:9},(_,i)=>`<path d="M${170+i*4} ${150+i*30} C 250 ${120+i*34}, 340 ${190+i*26}, ${470-i*4} ${160+i*30}"/>`).join('')}</g><ellipse cx="330" cy="270" rx="120" ry="84" fill="var(--red)" opacity=".2"/>${bits(110,71,330,270,116,80,{size:15,red:.45})}<path d="M260 230 Q300 205 350 214" stroke="var(--bg)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/></svg>`,'Illustration.');
+V.closeup=()=>VS(`<svg viewBox="0 0 640 520" role="img" aria-label="Extreme close-up of a spoonful of chili crisp"><ellipse cx="320" cy="262" rx="304" ry="226" fill="var(--tint)" stroke="var(--ink)" stroke-width="6"/><ellipse cx="320" cy="280" rx="276" ry="196" fill="var(--red)" opacity=".16"/>${bits(230,33,320,270,262,184,{size:22,red:.4})}${[[210,200],[420,240],[330,340],[250,320],[450,330]].map((p,i)=>`<ellipse cx="${p[0]}" cy="${p[1]}" rx="${26+i*3}" ry="${11+i}" fill="none" stroke="var(--red)" stroke-width="5" transform="rotate(${i*37} ${p[0]} ${p[1]})"/>`).join('')}<path d="M130 190 Q200 130 290 128" fill="none" stroke="var(--bg)" stroke-width="8" stroke-linecap="round" opacity=".7"/></svg>`,'Illustration of a spoonful.');
+V.scenes=()=>{const f=(svg,c)=>`<figure style="margin:0;display:flex;flex-direction:column;gap:6px">${svg}<figcaption class="illus">${c}</figcaption></figure>`;
+return `<div class="vs" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">${f(`<svg viewBox="0 0 260 190"><path d="M20 150 Q130 210 240 150 L240 160 Q130 220 20 160Z" fill="var(--ink)"/><ellipse cx="130" cy="140" rx="110" ry="26" fill="var(--tint)" stroke="var(--ink)" stroke-width="3"/>${spoon(120,92,.55,-20,{seed:41,n:70,size:11})}${bits(30,3,130,138,90,16,{size:8})}</svg>`,'a bigger spoonful')}${f(`<svg viewBox="0 0 260 190">${spoon(90,70,.46,-15,{seed:51,n:40,size:9})}${spoon(140,128,.46,-15,{seed:52,n:60,size:11,red:.2,oil:.1})}</svg>`,'a second and a third scoop')}${f(`<svg viewBox="0 0 260 190">${spoon(110,100,.7,-10,{seed:61,n:8,size:8,oil:.55})}<path d="M118 150 q-4 18 0 28" stroke="var(--red)" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/></svg>`,'too much oil, too little crisp')}</div>`};
+V.jar=lbl=>`<svg viewBox="0 0 90 100" width="64" role="img" aria-label="Jar labeled ${lbl}"><rect x="14" y="14" width="62" height="12" rx="2" fill="var(--ink)"/><rect x="10" y="26" width="70" height="66" rx="8" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="18" y="46" width="54" height="26" fill="var(--ink)"/><text x="45" y="64" text-anchor="middle" font-size="13" font-weight="500" style="fill:var(--bg);letter-spacing:.08em">${lbl}</text></svg>`;
+V.face=()=>VS(`<svg viewBox="0 0 520 520" role="img" aria-label="Line drawing of a face breaking into a sweat, grinning"><g fill="none" stroke="var(--ink)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx="260" cy="270" r="190"/><path d="M160 210 Q190 188 222 210"/><path d="M300 190 Q335 170 366 198"/><path d="M178 262 Q192 248 206 262"/><path d="M314 262 Q328 248 342 262"/><path d="M170 340 Q260 440 350 340 Z" fill="var(--ink)"/></g><path d="M214 392 Q262 420 306 392 Q282 372 258 376 Q232 372 214 392Z" fill="var(--bg)"/>${[[110,170],[420,150],[250,80]].map(p=>`<path d="M${p[0]} ${p[1]} q-16 24 -16 38 a16 16 0 0 0 32 0 q0 -14 -16 -38z" fill="var(--ink)"/>`).join('')}</svg>`,'Drawing.');
+V.drops=()=>VS(`<svg viewBox="0 0 520 360" role="img" aria-label="Three large drops of sweat">${[[120,60,1.6],[270,120,2.2],[410,50,1.3]].map(p=>`<path transform="translate(${p[0]} ${p[1]}) scale(${p[2]})" d="M0 0 q-20 34 -20 52 a20 20 0 0 0 40 0 q0 -18 -20 -52z" fill="var(--red)"/>`).join('')}</svg>`,'');
+V.bowlhand=()=>VS(`<svg viewBox="0 0 760 460" role="img" aria-label="A hand setting a bowl of food on a table"><line x1="0" y1="380" x2="760" y2="380" stroke="var(--ink)" stroke-width="5"/><path d="M270 260 Q270 370 380 372 Q490 370 490 260Z" fill="var(--tint)" stroke="var(--ink)" stroke-width="6" stroke-linejoin="round"/><ellipse cx="380" cy="260" rx="110" ry="22" fill="var(--bg)" stroke="var(--ink)" stroke-width="6"/><g fill="none" stroke="var(--mute)" stroke-width="5" stroke-linecap="round"><path d="M340 214 q-14 -22 0 -42 q14 -20 0 -40"/><path d="M390 210 q-14 -22 0 -42 q14 -20 0 -40"/><path d="M440 214 q-14 -22 0 -42 q14 -20 0 -40"/></g><path d="M780 230 C 690 232 610 300 520 330" fill="none" stroke="var(--ink)" stroke-width="52" stroke-linecap="round"/><circle cx="508" cy="336" r="30" fill="var(--ink)"/></svg>`,'Illustration.');
+V.glyph=i=>[`<svg viewBox="0 0 64 30" width="64"><path d="M2 26 C20 24 30 6 62 4" fill="none" stroke="currentColor" stroke-width="3"/></svg>`,`<svg viewBox="0 0 64 30" width="64"><ellipse cx="22" cy="16" rx="18" ry="10" fill="none" stroke="currentColor" stroke-width="3"/><path d="M38 16 H62" stroke="currentColor" stroke-width="4"/></svg>`,`<svg viewBox="0 0 64 30" width="64"><rect x="16" y="4" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M22 15 H42" stroke="currentColor" stroke-width="3"/></svg>`,`<svg viewBox="0 0 64 30" width="64"><path d="M32 3 V27 M5 15 H59 M13 6 L51 24 M13 24 L51 6" stroke="currentColor" stroke-width="3"/></svg>`,`<svg viewBox="0 0 64 30" width="64"><circle cx="20" cy="15" r="11" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="44" cy="15" r="11" fill="currentColor"/></svg>`][i];
+/* typesetting helpers */
+const P=t=>`<p>${t}</p>`,L=t=>`<p class="lead">${t}</p>`,Dd=t=>`<p class="d">${t}</p>`,K=t=>`<p class="k">${t}</p>`;
+const Q=(t,c='')=>`<figure class="qf ${c}"><blockquote>${t}</blockquote></figure>`;
+const SP=(l,r,rev)=>`<div class="split${rev?' rev':''}"><div class="tx">${l}</div>${r}</div>`;
+const SO=(l)=>`<div class="solo"><div class="tx">${l}</div></div>`;
+const SECS=[
+ {r:'',n:'Cover'},
+ {r:'',n:'Opening'},
+ {r:'I.',n:'HEAT IS NOT ONE THING',sub:'Sometimes heat whispers. Sometimes it makes an entrance.'},
+ {r:'II.',n:'HEAT HAS A LIFE INSIDE THE BITE',sub:'The first sensation isn\'t always the last.'},
+ {r:'III.',n:'HEAT CAN MAKE OTHER PLEASURES MORE INTERESTING',sub:'A good meal gives your mouth several things to enjoy.'},
+ {r:'IV.',n:'MILD IS A MUCH MORE INTERESTING WORD THAN IT APPEARS',sub:'Less heat can mean more pleasure. But only if the pleasure remains.'},
+ {r:'V.',n:'SOME PEOPLE LOVE THE BURN',sub:'Why do we enjoy something that hurts?'},
+ {r:'VI.',n:'HEAT IS PERSONAL. AND SOMETIMES DEEPLY EMOTIONAL.',sub:'Knowing someone can mean knowing how they like their food.'},
+ {r:'VII.',n:'WHAT COULD HEAT MEAN FOR MR BING?',sub:'Perhaps we\'ve been asking too little of heat.'},
+ {r:'',n:'FIVE CARDS FOR DISCUSSION'},
+ {r:'',n:'THE QUESTION'}
+];
+const HD=i=>`<div class="sh"><span class="rn">${SECS[i].r}</span>${SECS[i].n}</div><h3 class="subh">${SECS[i].sub}</h3>`;
+</script>
+<script>
+const GB=`Ivette Guzmán and Paul W. Bosland, “Sensory Properties of Chile Pepper Heat and Its Importance to Food Quality and Cultural Preference,” <i>Appetite</i> 117 (2017): 186–190. DOI: 10.1016/j.appet.2017.06.026.`;
+const RZ=`Paul Rozin and colleagues, “Glad to Be Sad, and Other Examples of Benign Masochism,” <i>Judgment and Decision Making</i> 8, no. 4 (2013): 439–447.`;
+const TH=`David Thompson, <i>Thai Street Food</i>, source PDF p. 117.`;
+const ZA=`Michelle Zauner, <i>Crying in H Mart</i>, supplied PDF p. 115.`;
+const DFS=`Fuchsia Dunlop, <i>The Food of Sichuan</i>.`;
+const DSF=`Fuchsia Dunlop, <i>Shark's Fin and Sichuan Pepper</i>.`;
+const BU=`Austin Bush, <i>The Food of Southern Thailand</i>.`;
+const RI=`Andy Ricker, <i>Pok Pok: The Drinking Food of Thailand</i>.`;
+const rv=(t,who,loc)=>({t,who,loc});
+const R={
+ mo:rv(`Just... zero flavor, then BAM! your tongue is on fire.`,`Momofuku customer, Amazon review A656, 2 stars`,`Source cell O657`),
+ fbj:rv(`I enjoy how it builds and then just evens out. It doesn't just keep compounding but rather remains a steady low burn as you eat.`,`Fly By Jing customer, Amazon review A753, 4 stars`,`Source cell O754. The page shows the first sentence only.`),
+ sb:rv(`There wasn’t as much crunch as I like so add another small scoop.`,`S&B customer, Amazon review A873 (excerpt)`,`Source cell O874. The page says a second and then a third scoop; that wording is not confirmed against the full review in this draft.`),
+ m188:rv(`I love that mild genuinely means mild!`,`Mr Bing customer, Mild, Amazon review A188, 5 stars`,`Source cell O189`),
+ m238:rv(`It ain’t mild.`,`Mr Bing customer, Mild, Amazon review A238, 3 stars`,`Source cell O239. Reviews of the Mild product; not a controlled same-batch comparison.`),
+ m596:rv(`I know I purchased "mild." But I did not think that would be the same as "bland."`,`Mr Bing customer, Amazon review A596, 2 stars`,`Source cell O597`),
+ lkk:rv(`It's not hot to the taste but makes you break out in a cold sweat. So it's great`,`Lee Kum Kee customer, Amazon review A794, 4 stars`,`Source cell O795`),
+ fbj2:rv(`I don't like super hot, so my husband adds his own extra amount to suit his love of spicy hot.`,`Fly By Jing customer, Amazon review A114, 5 stars`,`Source cell O115`)
+};
+const evq=q=>`<blockquote>“${q.t}”<small>${q.who}. ${q.loc}</small></blockquote>`;
+const MISS=`Not supplied in this draft; verify the locator against the coded dataset before publishing.`;
+const PG=[];
+const pg=(s,g,h,o={})=>PG.push({s,g,h,src:o.src||[],q:o.q||[],note:o.note||''});
+/* COVER */
+pg(0,'inv',`<div class="cover"><div><div class="kick"><b>Mr Bing</b><span>Evidence-led strategic exploration · October 2026</span></div><h1 style="margin-top:clamp(14px,2vw,28px)">THE ANATOMY OF <em>HEAT</em></h1><p class="sub2">What Hot Doesn't Tell You</p></div>${V.cover()}</div>`);
+/* OPENING */
+pg(1,'',SO(L(`There is something strange about heat.`)+P(`We seek it out. We warn one another about it. We boast about how much we can take. We complain when there's too much and feel cheated when there isn't enough.`)+P(`It can make our lips tingle, our eyes water, our noses run and our bodies sweat. Sometimes we reach for water. Sometimes we reach for another bite.`)));
+pg(1,'hot',SO(P(`And somehow, we describe this extraordinary collection of sensations with one small word.`)+`<p class="dx">Hot.</p>`+P(`It's a word that tells us remarkably little about what we're going to experience.`)));
+pg(1,'',SO(L(`To understand heat, we need to look beyond how much something burns. We need to understand what heat does to food, what it does to us, and why something that can hurt can also give us so much pleasure.`)));
+/* I */
+pg(2,'',SP(HD(2)+P(`Fuchsia Dunlop has spent much of her writing life exploring the remarkable complexity of Sichuan cooking.`)+P(`In <i>The Food of Sichuan</i>, she describes the local erjingtiao chile as prized for its fragrance and <strong>“gently building heat.”</strong>`)+P(`Consider those three words.`),`<div class="tx"><p class="stack"><span>Gently.</span><span>Building.</span><span>Heat.</span></p>${P(`They suggest something developing gradually, a sensation that grows rather than strikes.`)}</div>`),{src:[DFS]});
+pg(2,'inv',SP(P(`Elsewhere, describing Sichuan pepper, Dunlop writes of a <strong>“great crescendo of tingliness.”</strong>`)+P(`It's a marvelous description because it gives a physical sensation the language of music.`)+P(`Something begins almost imperceptibly. It gathers strength. It rises. The mouth starts to buzz.`)+P(`The sensation has movement, duration and character.`)+P(`In <i>Shark's Fin and Sichuan Pepper</i>, Dunlop makes another fascinating distinction. Sichuan's famous <i>ma la</i>, the combination of numbing and hot sensations, should awaken the palate rather than simply overwhelm it.`)+P(`Heat, in this telling, can make us more attentive to the food we're eating.`)+P(`This is much richer than our familiar mild, medium and hot classifications.`),V.crescendo()),{src:[DFS,DSF]});
+pg(2,'',SP(L(`Sensory scientists Ivette Guzmán and Paul Bosland give us a vocabulary for understanding why. They distinguish five dimensions of chile heat: its intensity, development, duration, location and feeling.`)+P(`In other words, two sensations can be equally intense while unfolding in completely different ways.`)+P(`One arrives immediately. Another takes its time.`)+P(`One burns the tongue. Another is felt in the throat.`)+P(`One disappears. Another remains long after the food has been swallowed.`)+Dd(`<strong>The strength of heat is only one part of its character.</strong>`),V.five()),{src:[GB],note:`The Guzmán and Bosland panel evaluated pepper varieties, not finished chili crisp products.`});
+pg(2,'',SP(P(`And that raises a curious possibility.`)+Dd(`What if describing heat were more like describing music, with an opening, a build, a climax and a finish?`),V.music()));
+/* II */
+pg(3,'',SO(HD(3)+P(`In <i>The Food of Sichuan</i>, Dunlop describes a rabbit dish from Zigong through the way heat and fragrance rise together.`)+P(`The food doesn't simply taste hot.`)+P(`Its character develops as it is eaten.`)+P(`Austin Bush, writing in <i>The Food of Southern Thailand</i>, gives us another beautifully precise description of a steamed fish curry.`)+P(`The dish is soft and silky, fragrant with herbs, and carries <strong>“a subtle sting of dried chiles and black peppercorns.”</strong>`)+Dd(`Subtle sting.`)+P(`Two words that tell us something quite different from scorching, fiery or blazing.`)+P(`The heat is present, but so are the softness and fragrance surrounding it.`)+P(`It has a particular relationship to the rest of the dish.`)),{src:[DFS,BU]});
+pg(3,'',`<div class="solo" style="max-width:none"><div class="tx">${P(`Now consider two ordinary eaters describing chili crisp.`)}</div><div class="pr"><div class="a"><div class="tx">${P(`One Momofuku customer complains:`)}${Q(`“Just... zero flavor, then BAM! your tongue is on fire.”`,'sm')}</div>${curveSvg(spike,'Illustrative curve: a sudden spike')}</div><div class="b"><div class="tx">${P(`Another, reviewing Fly By Jing, says:`)}${Q(`“I enjoy how it builds and then just evens out.”`,'sm')}</div>${curveSvg(plateau,'Illustrative curve: a climb that levels off')}</div></div><div class="tx">${P(`The first person's experience is an ambush. The second person's is a gradual climb followed by a welcome plateau.`)}${IL('The two curves are illustrations of the descriptions. They are not measured data.')}</div></div>`,{q:[R.mo,R.fbj]});
+pg(3,'inv',SO(P(`What makes these observations interesting is not simply whether the products are good or bad.`)+P(`It's that the sequence itself shapes the pleasure.`)+P(`There is a difference between heat that builds and heat that keeps building.`)+P(`There is a difference between a brief sting and a sensation that lingers.`)+P(`And there is a difference between enjoying the food while feeling heat and losing the food beneath the sensation.`)+Dd(`<strong>Heat has a beginning, a middle and an end.</strong>`)));
+pg(3,'',SO(L(`Yet most condiment packaging tells us almost nothing about this journey.`)+P(`The question becomes more interesting when we ask whether a recognizable progression of heat could become part of a product's identity, as distinctive as its texture, aroma or taste.`)));
+/* III */
+pg(4,'',SP(HD(4)+P(`One of the most compelling things about Asian food writing is the precision with which authors describe sensations working together.`)+P(`In Sichuan cooking, the numbing sensation of Sichuan pepper can appear alongside aromatic chile oil, sweetness, sourness, crispness and richness.`)+P(`In southern Thai cooking, heat can be tempered or transformed by coconut milk, herbs, acidity and accompanying dishes.`)+P(`A meal may contain something intensely spicy beside something gentle and cooling.`)+P(`The pleasure emerges from the relationships.`),V.table()),{src:[DFS,BU]});
+pg(4,'',SO(P(`We know this instinctively.`)+P(`Think about how satisfying something crisp can be inside something soft.`)+P(`Or the way acidity cuts through richness.`)+P(`Or how a little heat can make a sweet flavor more intriguing.`)+P(`One sensation changes our experience of another.`)+P(`Dunlop describes Sichuan pepper as awakening the palate to the other flavors of a meal.`)+P(`It's a wonderful reversal of how we usually think about spice.`)+L(`We often imagine heat as something that competes with flavor. But in a well-composed dish, it may contribute to how we perceive the flavors around it.`)),{src:[DFS]});
+pg(4,'inv',SP(P(`And yet heat can also become too dominant.`)+P(`David Thompson makes a revealing observation in <i>Thai Street Food</i> while discussing a sauce served with a crunchy mussel omelette.`)+P(`He prefers a mildly spiced version because it allows him to eat more of it.`)+P(`This seemingly modest preference contains an important idea.`)+P(`He wants more of the sauce's pleasure. Excessive heat would limit how much he could enjoy.`),V.plate()),{src:[TH]});
+pg(4,'',SP(P(`Now consider chili crisp.`)+P(`A spoonful delivers heat, oil, flavor and crunchy solids together.`)+P(`But the eater may want very different amounts of each.`)+P(`Perhaps they want more crunch without more burn.`)+P(`Perhaps they want another spoonful of flavor.`)+P(`Perhaps they want a smaller amount with a stronger kick.`),V.closeup()));
+pg(4,'',SP(P(`An S&B customer describes adding a second and then a third scoop in pursuit of enough crunch.`)+P(`A Mr Bing customer complains that a spoonful contains too much oil and too little crisp.`)+P(`And another Mr Bing buyer wants more heat to justify the calories.`)+P(`These are different accounts of the same underlying question.`)+Dd(`<strong>What makes a spoonful satisfying?</strong>`)+P(`A bigger spoonful may be the answer. A smaller, more concentrated one may be better.`)+P(`The desired quantity depends on the pleasure someone is trying to obtain.`),V.scenes()),{q:[R.sb],src:[`Mr Bing review A597 (the oil complaint), source cell O598. The full review text is not reproduced in this draft; verify it against the dataset.`,`The Mr Bing buyer who wants more heat to justify the calories: locator ${MISS}`]});
+pg(4,'hot',SO(P(`This is a promising way to investigate chili crisp because the interaction between heat, flavor, texture and amount is part of the eating experience.`)+`<p class="d">It also reminds us that <strong>more heat and more pleasure are not necessarily the same thing.</strong></p>`));
+</script>
+<script>
+const jarBig=VS(`<svg viewBox="0 0 90 100" style="max-width:300px" role="img" aria-label="A jar labeled Mild"><rect x="14" y="14" width="62" height="12" rx="2" fill="var(--ink)"/><rect x="10" y="26" width="70" height="66" rx="8" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="18" y="46" width="54" height="26" fill="var(--ink)"/><text x="45" y="64" text-anchor="middle" font-size="12" font-weight="500" style="fill:var(--bg);letter-spacing:.08em">MILD</text></svg>`,'Illustration of a jar.');
+/* IV */
+pg(5,'',SP(HD(5)+P(`Mild often sounds like a concession.`)+P(`Something for people who cannot handle the real thing.`)+P(`But Thompson's observation suggests another interpretation.`)+P(`Mildness can be a deliberate choice made in pursuit of greater enjoyment.`)+P(`It can allow someone to appreciate more of a sauce, more of a dish or more of the flavors that would otherwise be overwhelmed.`)+P(`Mildness can have its own positive appeal.`),jarBig),{src:[TH]});
+pg(5,'',`<div class="solo" style="max-width:none"><div class="tx">${P(`But what exactly is the promise?`)}${P(`Three Mr Bing customers offer three different answers.`)}</div><div class="tri"><div><div>${V.jar('MILD')}</div><div class="tx">${P(`One writes:`)}${Q(`“I love that mild genuinely means mild!”`,'sm')}</div></div><div><div>${V.jar('MILD')}</div><div class="tx">${P(`Another says:`)}${Q(`“It ain’t mild.”`,'sm')}</div></div><div><div>${V.jar('MILD')}</div><div class="tx">${P(`A third makes a different complaint:`)}${Q(`“I know I purchased "mild." But I did not think that would be the same as "bland."”`,'sm')}</div></div></div></div>`,{q:[R.m188,R.m238,R.m596]});
+pg(5,'',SO(P(`These are wonderfully revealing statements.`)+P(`The first customer is delighted by a promise kept.`)+P(`The second rejects the same promise.`)+P(`The third accepts that the heat should be lower but objects to what they perceive as a loss of flavor.`)+Dd(`That last distinction matters enormously.`)+P(`Someone who chooses Mild may still want smoke, fragrance, richness, crunch, complexity and surprise.`)+P(`They may want everything they find attractive about chili crisp, except an overwhelming burn.`)),{q:[R.m596]});
+pg(5,'inv',SO(P(`But consumers don't share a single definition of mild.`)+P(`Someone accustomed to intense spice may experience a product very differently from someone who rarely eats it.`)+P(`The same sensation can be reassuring to one person and uncomfortable to another.`)+P(`Meanwhile, competitors are already making sophisticated promises around mildness.`)+P(`Fly By Jing offers a mild variety that retains an association with Sichuan flavor while removing the high heat.`)+P(`Momofuku's Mild Garlic Chili Crunch invites generous spooning and sharing.`)+P(`The idea of pleasurable mildness is therefore not unoccupied.`)),{note:`Competitor descriptions are as stated in the copy; the audit file named in the earlier master copy is the place to verify them.`});
+pg(5,'hot',SO(P(`Still, something intriguing remains.`)+Dd(`<strong>What if Mild were understood as a kind of pleasure in its own right?</strong>`)+P(`A choice made because of what someone wants to experience, rather than what they wish to avoid.`)+P(`That possibility deserves closer examination.`)));
+/* V */
+pg(6,'hot',SP(HD(6)+P(`There is an obvious contradiction at the heart of spicy food.`)+P(`The sensations associated with intense chile heat can be uncomfortable.`)+P(`They can make us sweat, cry, cough and gasp.`)+P(`Yet millions of people actively seek them out.`)+P(`Some want the kind of heat that makes them reach for another glass of water. Others enjoy approaching the limits of their tolerance.`)+P(`Why?`),V.face()));
+pg(6,'',SO(P(`Psychologist Paul Rozin and his colleagues have investigated the curious human capacity to enjoy experiences that resemble discomfort or danger when they occur in circumstances we can accept.`)+P(`In a 2013 study of what the researchers call <i>benign masochism</i>, respondents described pleasure in various normally aversive experiences, including the burn of chile peppers.`)+P(`The attraction is not necessarily that the sensation has become weak.`)+Dd(`People can enjoy feeling it.`)),{src:[RZ]});
+pg(6,'inv',SP(P(`One Lee Kum Kee reviewer captures the paradox beautifully:`)+Q(`“It's not hot to the taste but makes you break out in a cold sweat. So it's great”`)+P(`Notice the conclusion.`)+P(`So it's great.`)+P(`The sweating is part of the pleasure.`),V.drops()),{q:[R.lkk]});
+pg(6,'',SO(P(`This is where our ordinary language around heat begins to seem inadequate.`)+P(`Burning can be a complaint or a compliment.`)+P(`Tingling can be exciting or unpleasant.`)+P(`A long-lasting sensation can be welcome or regretted.`)+P(`The body responds. The person interprets the response.`)+Dd(`And the interpretation changes everything.`)));
+pg(6,'',SP(P(`Andy Ricker's <i>Pok Pok: The Drinking Food of Thailand</i> places strong sensations in a different setting.`)+P(`He describes a fragrant, flavorful, hot broth as part of an evening spent drinking and eating with others.`)+P(`The heat belongs to an occasion unfolding over time.`)+P(`The food keeps contributing to the pleasure of being there.`)+P(`It is easy to see how intensity can become more than an isolated physical sensation.`)+P(`It can contribute to anticipation, conversation, humor and the character of an evening.`),V.bowl()),{src:[RI]});
+pg(6,'inv',SO(Dd(`<strong>For some people, the burn is the reward.</strong>`)+P(`This matters for Mr Bing because a brand with Mild and Spicy products need not treat its hotter offering as simply a more intense version of the same experience.`)+P(`It might be worth asking what people actively enjoy about its particular kind of heat.`)+P(`The rise? The tingle? The warmth? The kick? The sensation that remains afterward?`)+P(`And how does that pleasure interact with everything else in the jar?`)));
+/* VI */
+pg(7,'',SP(HD(7)+P(`Most of us have experienced a small negotiation over heat.`)+P(`Someone says a dish isn't spicy.`)+P(`Someone else takes a bite and reaches for water.`)+P(`At a shared meal, one person wants more chile. Another asks for less. Someone adds sauce to their own plate.`)+P(`A Fly By Jing consumer describes this arrangement plainly. She doesn't enjoy very hot food, so her husband adds more to suit himself.`)+P(`A Mr Bing customer reports loving Mild, while her husband finds even that version too spicy.`)+P(`The same table contains different preferences.`),V.table()),{q:[R.fbj2],src:[`Mr Bing review A205, source cell O206 (the buyer who loves Mild while her husband finds it too spicy). Full text is not reproduced in this draft; verify it.`]});
+pg(7,'',SO(P(`But heat is personal in a deeper sense, too.`)+P(`It can become part of how we think about ourselves.`)+P(`People describe themselves as adventurous eaters, spice lovers, beginners or people who cannot handle the burn.`)+P(`Sometimes these identities become surprisingly important.`)+P(`An Instagram commenter explains that they choose Mr Bing Mild because they enjoy the flavor and crunch, while calling themselves “a whimp.”`)+P(`There is humor in the self-description, but also a familiar social judgment.`)+P(`We sometimes act as though tolerating more heat makes someone more accomplished.`)),{src:[`Instagram comment locators from the earlier master copy: AAR-354 (cell BH418) and ITS-124 (cell BH884, the comment that references Mr Bing). Which comment is the “whimp” remark, and which is the “anymore” remark, is not confirmed in this draft. Verify both against the dataset.`]});
+pg(7,'',SO(P(`Yet preferences can change.`)+P(`Another commenter writes with frustration about no longer being able to tolerate the hot food they grew up eating.`)+P(`The word <i>anymore</i> carries an entire history.`)+Dd(`Something that once belonged naturally to their life has become difficult to enjoy.`)),{src:[`Instagram comment AAR-354 (cell BH418), per the earlier master copy. Verify the mapping against the dataset.`]});
+pg(7,'inv',SP(P(`Michelle Zauner gives this feeling extraordinary emotional force in <i>Crying in H Mart</i>.`)+P(`During her mother's illness, Zauner rinses the red pepper from kimchi to make it easier for her mother to eat.`)+P(`Her mother looks at what remains and says:`)+Q(`“I can’t even eat kimchi.”`)+P(`It's a devastating moment.`)+P(`The loss concerns much more than chile heat.`)+P(`It touches the familiar pleasures of eating, a relationship with one's own body, and a food deeply connected to memory and identity.`),V.bowlhand()),{src:[ZA]});
+pg(7,'',SO(P(`Zauner's account should not be reduced to a condiment marketing insight.`)+P(`But it can make us more attentive to the human meaning of food preferences.`)+P(`Sometimes accommodating someone's tolerance is an ordinary practical adjustment.`)+P(`Sometimes it is a small act of consideration.`)+P(`And sometimes food expresses continuity with a life that is changing.`)),{src:[ZA]});
+pg(7,'hot',SO(Dd(`<strong>Heat can reveal something about who we are, what we remember and how we care for one another.</strong>`)+P(`That is a much larger emotional territory than the conventional promise of choosing your preferred spice level.`)));
+/* VII */
+pg(8,'',SO(HD(8)+P(`We've explored heat as music, as physical sensation, as a companion to other flavors, as appetite, as pleasure, as personal identity and as care.`)+P(`We've encountered heat that gently builds, tingling that reaches a crescendo, a subtle sting inside a soft and fragrant dish, and a burn that someone enjoys enough to seek again.`)+P(`We've also seen how people disagree about it.`)));
+pg(8,'inv',SO(P(`One person's mild is another person's hot.`)+P(`One person's pleasure is another person's discomfort.`)+P(`And the amount of crunch someone wants may have very little to do with the amount of heat they want.`)));
+pg(8,'',SO(P(`Now consider how Mr Bing describes its own products.`)+P(`Its existing chili crisp language talks about smoky and fruity peppers, sweetness, umami and crunch.`)+P(`The revised product descriptions introduce warmth, tingling and a distinction between the experiences intended for Mild and Spicy.`)+P(`There is already more sensory potential in that vocabulary than in a simple promise to make food taste better.`)+L(`But attractive language alone cannot establish a distinctive position.`)),{src:[`Mr Bing product copy: Revised boilerplates.`]});
+pg(8,'',SO(P(`Momofuku already describes the arrival and finish of heat.`)+P(`Fly By Jing already associates Sichuan flavor with tingling, intensity and sensory awakening.`)+P(`S&B already gives mildness an appealing role alongside umami.`)+P(`Lee Kum Kee already describes heat as something that develops.`)+P(`The opportunity for Mr Bing must be more specific than adopting beautiful words or borrowing the metaphors of exceptional food writers.`)+P(`It must come from a truthful relationship between the product, the experience and the people who choose it.`)+P(`The research leaves us with five possibilities worth discussing.`)+Dd(`None is yet a positioning.`)+P(`Each invites us to examine a different level of what the brand might become.`)),{src:[`Competitor audit: Full competition folder review.`]});
+/* FIVE CARDS */
+const FC=[
+ [`1.`,`HEAT HAS A CHARACTER`,`Could Mr Bing become recognizable for the particular way its heat behaves?`,[`Heat can arrive, build, tingle, bloom, settle, fade or linger.`,`This could begin with a specific sensory attribute and potentially develop into a more expressive identity.`,`What would people have to experience in a bite of Mr Bing for this to become genuinely distinctive?`]],
+ [`2.`,`THE SATISFYING SPOONFUL`,`Could Mr Bing help people get exactly the combination of heat, crunch and flavor they want?`,[`The eater may want more of one pleasure without wanting more of another.`,`The quantity of sauce and the quantity of satisfaction are not always equivalent.`,`Could this become a meaningful functional or emotional benefit, and what would the product have to deliver to earn it?`]],
+ [`3.`,`MILD WITH MEANING`,`Could choosing Mild feel like choosing more of the pleasure you love?`,[`Mildness can protect access to flavor, fragrance, texture and appetite.`,`It can also disappoint when the product feels bland or unexpectedly hot.`,`Is there a positive, credible and competitively distinctive way for Mr Bing to give Mild its own desirability?`]],
+ [`4.`,`THE PLEASURE OF THE BURN`,`Could Mr Bing celebrate the extraordinary pleasure of feeling heat?`,[`Some people enjoy the rise, sting, sweat and aftermath.`,`For them, intensity is part of the reward.`,`Could the Spicy product have a recognizable kind of enjoyable intensity, with an imaginative world built around that pleasure?`]],
+ [`5.`,`HEAT IS HUMAN`,`Could Mr Bing understand the personal and social life of heat better than its competitors?`,[`Heat expresses preference, confidence, vulnerability, habit, memory and care.`,`The same meal may need to accommodate several different relationships with spice.`,`Could Mr Bing play a meaningful role in helping people enjoy food on their own terms?`]]
+];
+FC.forEach((c,i)=>pg(9,i==2?'inv':'',`<div class="cw"><div class="sc k${i+1}"><div class="num">${c[0]}</div><h2>${c[1]}</h2><div class="tx"><p class="lead"><strong>${c[2]}</strong></p>${c[3].map(P).join('')}</div></div><div class="vs" style="align-items:flex-start;color:var(--ink)">${i==0?`<div class="kick"><b>Five cards</b><span>for discussion</span></div>`:`<div class="kick"><b>Card ${i+1}</b><span>of five</span></div>`}<div style="transform:scale(2.2);transform-origin:left top;margin-bottom:60px">${V.glyph(i)}</div></div></div>`,{note:i==0?'The five cards are listed in no order of preference.':''}));
+/* QUESTION */
+pg(10,'',SO(P(`We began with a word that seems almost embarrassingly simple.`)+`<p class="dx">Hot.</p>`+P(`We found a much larger world inside it.`)+L(`A world of fragrance and tingling, anticipation and release, pleasure and discomfort, appetite and restraint, personal pride and intimate consideration.`)));
+pg(10,'inv',SO(P(`Perhaps the most interesting thing about heat is how much it reveals about the person experiencing it.`)+`<p class="d"><strong>What part of this extraordinary experience can Mr Bing credibly make its own?</strong></p>`+P(`And at what level should it belong: an attribute, a benefit, an emotional territory, a brand value or an imaginative world?`)+L(`That is the conversation worth having.`)));
+/* ====== RUNTIME ====== */
+const $=id=>document.getElementById(id);
+const stage=$('stage'),evid=$('evid'),toc=$('toc'),scrim=$('scrim');
+const pad=n=>String(n).padStart(2,'0'),N=PG.length;
+let cur=0;
+const first=SECS.map((_,i)=>PG.findIndex(p=>p.s===i));
+const PHOTO_ASSETS = {0: ["https://jenis.com/cdn/shop/files/Fly_By_Jing_SCC_Macro_Edit_a3d1ad82-8bb2-4676-83ac-9985c2cc6abe_1500x.jpg?v=1718205794", "Fly By Jing / Jeni’s, chili crisp macro photograph"], 2: ["https://jbf-media.s3.amazonaws.com/production/recipe/2017/4/5/peppercorns.jpg", "James Beard Foundation, Sichuan peppercorns"], 3: ["https://asianinspirations.com.au/wp-content/uploads/2021/03/6-Techniques-of-Authentic-Thai-Cooking_02-Toon.jpg", "Asian Inspirations, Thai hot pot photography"], 4: ["https://shop.momofuku.com/cdn/shop/articles/Fried_Egg_Bowl_1_AJB_1024x1024.jpg?v=1759785291", "Momofuku Goods, chili crunch fried egg noodles"], 6: ["https://flybyjing.com/cdn/shop/files/NoodlePDP-CC-Lifestyle-4-Spoon-1200x1200.png?v=1774637594", "Fly By Jing, chili crisp noodles"]};
+const photoPages = new Set();
+const seenPhotoSections = new Set();
+const secs=PG.map((p,i)=>{const s=document.createElement('section');s.className='card'+(p.g?' '+p.g:'');s.setAttribute('aria-label',`Page ${i+1} of ${N}`);
+ let pageHTML=p.h;
+ // Selective photographic chapter openings, retaining the full original content behind each photographic spread.
+ if(PHOTO_ASSETS[p.s] && !seenPhotoSections.has(p.s)){
+   seenPhotoSections.add(p.s);photoPages.add(i);
+   const a=PHOTO_ASSETS[p.s];
+   pageHTML=`<div class="photo-bleed"><img src="${a[0]}" alt="Editorial food photography associated with this chapter" loading="eager"><div class="photo-copy">${p.h}</div><span class="photo-credit">Photo: ${a[1]} · illustrative, not Mr Bing product</span></div>`;
+   s.classList.add('photopage');
+ }
+ s.innerHTML=pageHTML+(i>0?`<button class="btn ev-open" data-ev><span class="lbl">Explore the </span>Evidence</button>`:'');stage.insertBefore(s,scrim);return s});
+$('ticks').innerHTML=first.slice(1).map(i=>`<span class="tick" style="left:${(i/(N-1)*100).toFixed(2)}%"></span>`).join('');
+function evHTML(p,i){const has=p.src.length||p.q.length||p.note;
+ return `<button class="btn x" data-close>Close</button><div class="kick"><b>Page ${i+1} / ${N}</b><span>Explore the Evidence</span></div><h3>${SECS[p.s].n||''}</h3>`
+ +(p.q.length?`<h4>Consumer voices, complete and exact</h4>${p.q.map(evq).join('')}`:'')
+ +(p.src.length?`<h4>Sources named on this page</h4><ul>${p.src.map(x=>`<li>${x}</li>`).join('')}</ul>`:'')
+ +(p.note?`<h4>Limits</h4><p>${p.note}</p>`:'')
+ +(has?'':`<p style="color:var(--mute)">This page makes no claim that needs a separate source. Its illustrations are drawings, not measurements.</p>`)
+ +`<h4>Verification</h4><p>The copy gives page numbers only for Thompson (p. 117) and Zauner (p. 115). Confirm every other page reference, and each review locator, against the source files before publishing.</p>`
+ +`<h4>Research files cited</h4><ul><li>Chili crisp coded dataset</li><li>Heat Language: Mr Bing, Competitors, Consumers, Writers and Scholars</li><li>Revised boilerplates</li><li>Full competition folder review</li></ul>`;}
+function tocHTML(){return `<button class="btn x" data-close>Close</button><div class="kick"><b>Contents</b><span>${N} pages</span></div><ul class="toc">${SECS.map((s,i)=>{const pgN=PG.filter(p=>p.s===i).length,a=first[i],isCur=PG[cur].s===i;return `<li><button data-go="${a}" class="${isCur?'cur':''}"><span class="n">${s.r||pad(a+1)}</span><span>${s.n}</span><span class="c">${pgN} p.</span></button></li>`}).join('')}</ul>`}
+function setDrawer(el,open){el.classList.toggle('open',open);el.setAttribute('aria-hidden',String(!open));
+ if(el===evid)$('be').setAttribute('aria-expanded',String(open));if(el===toc)$('bc').setAttribute('aria-expanded',String(open));
+ scrim.classList.toggle('on',evid.classList.contains('open')||toc.classList.contains('open'));
+ if(open){const x=el.querySelector('[data-close]');x&&x.focus({preventScroll:true})}}
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;const p=PG[i];
+ setDrawer(evid,false);setDrawer(toc,false);
+ secs.forEach((s,j)=>s.classList.toggle('on',j===i));secs[i].scrollTop=0;
+ evid.innerHTML=evHTML(p,i);toc.innerHTML=tocHTML();
+ $('mv').textContent=(SECS[p.s].r?SECS[p.s].r+' ':'')+SECS[p.s].n;
+ $('count').textContent=`${pad(i+1)} / ${N}`;
+ $('fl').style.width=(i/(N-1)*100)+'%';
+ $('be').hidden=i===0;$('prev').disabled=i===0;$('next').disabled=i===N-1;
+ try{history.replaceState(null,'','#p'+(i+1))}catch(e){}}
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.go!==undefined){go(+t.dataset.go);return}
+ if(t.dataset.close!==undefined){setDrawer(evid,false);setDrawer(toc,false);return}
+ if(t.dataset.ev!==undefined){setDrawer(toc,false);setDrawer(evid,true);return}});
+$('prev').onclick=()=>go(cur-1);$('next').onclick=()=>go(cur+1);
+$('bc').onclick=()=>{const o=!toc.classList.contains('open');setDrawer(evid,false);setDrawer(toc,o)};
+$('be').onclick=()=>{const o=!evid.classList.contains('open');setDrawer(toc,false);setDrawer(evid,o)};
+$('track').addEventListener('click',e=>{const r=$('track').getBoundingClientRect();go(Math.round((e.clientX-r.left)/r.width*(N-1)))});
+$('bt').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('heat-theme',r.dataset.theme)}catch(e){}};
+scrim.onclick=()=>{setDrawer(evid,false);setDrawer(toc,false)};
+document.addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key,onBtn=e.target.closest&&e.target.closest('button');
+ if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();go(cur+1)}
+ else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+ else if(k===' '&&!onBtn){e.preventDefault();go(cur+1)}
+ else if(k==='Home')go(0);else if(k==='End')go(N-1);
+ else if(k==='Escape'){setDrawer(evid,false);setDrawer(toc,false)}
+ else if((k==='e'||k==='E')&&cur>0)$('be').click();
+ else if(k==='c'||k==='C')$('bc').click();});
+let tx=0,ty=0;
+stage.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+stage.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>70&&Math.abs(dy)<50){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+try{const t=localStorage.getItem('heat-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+const m=/^#p(\d+)$/.exec(location.hash||'');go(m?+m[1]-1:0);
+</script>
+
+<!-- Photography requires online access. Source photography belongs to named owners. All original essay copy and evidence panels preserved. -->
+</body></html>
